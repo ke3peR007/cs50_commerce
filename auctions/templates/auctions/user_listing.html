@@ -1,0 +1,41 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+{% block body %}
+    <h2 style="text-align: center;">Your Listings</h2>
+
+    {% for list in listing %}
+        <div class="d-flex justify-content-center row">
+            <div class="col-md-10">
+                <div class="row p-2 bg-white border rounded">
+                    <div class="col-md-3 mt-1">
+                        {% if list.image_url %}
+                        <a href="{% url 'listing' list.id%}">
+                            <img href="{% url 'listing' list.id%}" class="img-fluid img-responsive rounded product-image" src="{{ list.image_url }}">
+                        </a>
+                        {% else %}
+                        <a href="{% url 'listing' list.id%}">
+                            <img  class="img-fluid img-responsive rounded product-image" src="{% static 'auctions/no-image-available.png' %}">
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mt-1">
+                        <h5>Title: {{ list.title }}</h5>
+                        <p class="text-justify text-truncate para mb-0">Description: {{ list.description }}</p>
+                        <p class="text-justify text-truncate para mb-0">Category: {{ list.category }}</p>
+                    </div>
+                    <div class="align-items-center align-content-center col-md-3 border-left mt-1">
+                        <div class="d-flex flex-row align-items-center">
+                            <h5 class="strike-text">Starting Bid: ${{ list.starting_bid }}</h5><br>
+                            <h5 class="strike-text">Highest Bid: ${{ list.highest_bid }}</h5>
+                        </div>
+                        {% if list.status_of_listing %}
+                        <div class="d-flex flex-column mt-4"><a href="{% url 'remove_listing' list.id %}"class="btn btn-outline-danger btn-sm mt-2" type="button">Close Listing</a></div>
+                        {% else %}
+                        <h5 class="strike-text">Listing is no longer active. Highest Bid was ${{ list.highest_bid }}</h5>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

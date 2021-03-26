@@ -1,0 +1,85 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    <h2>Add Listing</h2>
+
+    <!-- 
+        Users should be able to specify a title for the listing, a text-based description, and what the starting bid should be.
+        Users should also optionally be able to provide a 
+        URL for an image for the listing and/or a category (e.g. Fashion, Toys, Electronics, Home, etc.).
+
+
+     -->
+    {% if message %}
+        <h3>{{ message }}</h3>
+    {% endif %}
+    
+    {% for message in messages %}
+        <div class="modal fade" id="exampleModalCenter"  tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="heading lead">{{ message }}</p>
+                <!-- <h5 class="modal-title" id="exampleModalLongTitle">{{ message }}</h5> -->
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    {{ message }}
+                </div>
+                <div class="modal-footer">
+                <a class="btn btn-info" role="button" href="{% url 'create_listing' %}">Add Listing</a>
+                <a class="btn btn-outline-info" role="button" href="{% url 'user_listing' %}">No Thanks</a>
+                </div>
+            </div>
+            </div>
+        </div> 
+    {% endfor %}
+    <form action="{% url 'create_listing' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.title.errors }}
+            <label for="{{ form.title.id_for_label }}">Title</label>
+            {{ form.title }}
+        </div>
+        <div class="form-group">
+            {{ form.description.errors }}
+            <label for="">Description</label>
+            {{ form.description }}
+        </div>
+        <div class="form-group">
+            {{ form.starting_bid.errors }}
+            <label for="{{ form.starting_bid.id_for_label }}">Starting Bid</label>
+            {{ form.starting_bid }}
+        </div>
+        <div class="form-group">
+            {{ form.image_url.errors }}
+            <label for="{{ form.image_url.id_for_label }}">Image URL</label>
+            {{ form.image_url }}
+        </div>
+        <div class="form-group">
+            {{ form.category.errors }}
+            <label for="{{ form.category.id_for_label }}">Category</label>
+            {{ form.category }}
+        </div>
+        <div class="form-check">
+            {{ form.status_of_listing.errors }}
+            {{ form.status_of_listing }}
+            <label class="form-check-label" for="{{ form.status_of_listing.id_for_label }}">
+                Click to make listing active.
+            </label>
+        </div>
+       
+        <input class="btn btn-primary" type="submit" value="Add Listing">
+    </form>
+    {% endblock %}
+    {% block scripts %}
+    <script type="application/javascript">
+            $(document).ready(function(){
+                $('#exampleModalCenter').modal({show:true});
+            });
+    </script>
+    {% endblock %}
+    
