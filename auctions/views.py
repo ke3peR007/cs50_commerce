@@ -7,7 +7,9 @@ from django.contrib.auth.decorators import login_required
 from django import forms
 from django.contrib import messages
 from django.db.models import Max
-
+from django.utils import timezone
+import pytz
+import datetime
 from .models import User, Product, Bid, Comment
 
 
@@ -29,11 +31,7 @@ class ListingForm(forms.Form):
                 continue
             visible.field.widget.attrs['class'] = 'form-control'
 
-def index(request):
-    listings = Product.objects.all().filter(status_of_listing=True)
-    return render(request, "auctions/index.html", {
-        "listings": listings
-    })
+
 
 class BidForm(forms.Form):
     bid = forms.FloatField(label="Starting Bid", min_value=0.0, required=True)
@@ -48,6 +46,14 @@ class CommentForm(forms.Form):
         super(CommentForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control'
+
+
+
+def index(request):
+    listings = Product.objects.all().filter(status_of_listing=True)
+    return render(request, "auctions/index.html", {
+        "listings": listings
+    })
 
 def login_view(request):
     if request.method == "POST":
@@ -128,24 +134,6 @@ def create_listing(request):
             
 
 
-        # try:
-        #     title = request.POST["title"]
-        #     description = request.POST["description"]
-        #     category = request.POST["category"]
-        #     image_url = request.POST["image_url"]
-        #     starting_bid = float(request.POST["starting_bid"])
-        #     status_of_listing = request.POST.get("status_of_listing", False)
-        #     user = request.user
-        #     print(status_of_listing)
-        # except:
-        #     return render(request, "auctions/add_product.html", {
-        #         "message" : "Please enter valid details."
-        #     })
-        # product = Product(title=title, description=description, category=category, image_url=image_url, starting_bid=starting_bid, highest_bid=0, user=user,status_of_listing=status_of_listing)
-        # product.save()
-        # return HttpResponseRedirect(reverse("index"))
-
-
 @login_required()
 def user_listing(request):
     if request.method == "GET":
@@ -164,12 +152,13 @@ def listing(request, listing_id):
             highest_bids = Bid.objects.all().filter(product=listing).aggregate(Max('bid_price'))
             bids_count = Bid.objects.all().filter(product=listing).count()
             comments = Comment.objects.all().filter(product=listing)
+            if listing.status_of_listing == False:
+                winner = Bid.objects.get(bid_price=highest_bids["bid_price__max"])
+            else:
+                winner = None
         except:
             return HttpResponseRedirect(reverse("index"))
-        if listing.status_of_listing == False:
-            winner = Bid.objects.get(bid_price=highest_bids["bid_price__max"])
-        else:
-            winner = None
+        
         return render(request, "auctions/listing.html", {
             "listing" : listing,
             "form" : BidForm(),
@@ -203,9 +192,6 @@ def remove_listing(request, listing_id):
     product = Product.objects.get(pk=listing_id)
     product.status_of_listing = False
     product.save()
-    # highest_bid = Bid.objects.all().filter(product=product).aggregate(Max('bid_price'))
-    # winner = Bid.objects.get(bid_price=highest_bid["bid_price__max"])
-    # print(winner)
     return HttpResponseRedirect(reverse("user_listing"))
 
 
@@ -215,17 +201,13 @@ def add_comment(request):
     form = CommentForm(request.POST)
 
     if form.is_valid():
-        
             user_comment = form.cleaned_data["comment"]
-            
-            commented_on = int(request.POST["commented_on"])
             listing_id = request.POST["listing_id"]
             product = Product.objects.get(pk=listing_id)
             user = request.user
-            print(type(commented_on))
-            comment = Comment(product=product, comment=user_comment,commented_on=commented_on,user=user)
+            
+            comment = Comment(product=product, comment=user_comment,user=user)
             comment.save()
             return HttpResponseRedirect(reverse("listing", args={listing_id}))
-        
-
-            # return HttpResponseRedirect(reverse("index")) 
+    else:
+        return HttpResponseRedirect(reverse("index"))

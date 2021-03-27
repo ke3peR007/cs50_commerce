@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
+from django.utils import timezone
+import datetime
 
 class User(AbstractUser):
     pass
@@ -13,7 +14,7 @@ class Product(models.Model):
     image_url = models.TextField(default="None")
     starting_bid = models.FloatField(default=0)
     highest_bid = models.FloatField(default=0)
-    # username_created = models.CharField(max_length=64, default="None")
+   
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status_of_listing = models.BooleanField(default=False)
     
@@ -34,23 +35,18 @@ class Comment(models.Model):
 
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="comment_product")
     comment = models.TextField()
-    commented_on = models.IntegerField(default=-1)
     commented_time = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comment_user")
 
     def __str__(self):
-        return f"{self.id}: {self.user.username} :{self.product.title}: {self.comment}: {self.commented_on} :{self.commented_time}"
+        return f"{self.id}: {self.user.username} :{self.product.title}: {self.comment} :{self.commented_time}"
 
-# class Watchlist(models.Model):
-#    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-#    item = models.ManyToManyField(Product)
-#    def __str__(self):
-#        return f"{self.user}'s WatchList"
+
 
 class UserWatchlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_watchlist", default=None)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="product_watchlist")
-    # item_id = models.IntegerField()
+    item_id = models.IntegerField()
 
     def __str__(self):
         return f"{self.user.username} : {self.product.title}"

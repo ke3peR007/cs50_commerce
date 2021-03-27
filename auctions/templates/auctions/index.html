@@ -15,26 +15,15 @@
                             {% if list.image_url %}
                             <img class="pic-1" src="{{ list.image_url }}">
                             {% else %}
-                                
-                                <!-- <img src="no-image-available.png" alt="My image"> -->
                                 <img class="" src="{% static 'auctions/no-image-available.png' %}">
                             {% endif %}
                         </a>
                         <ul class="product-links">
-                            <!-- <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li> -->
                             <li><a href="#"><i class="far fa-heart"></i></a></li>
-                            <!-- <li><a href="#"><i class="fa fa-random"></i></a></li> -->
-                            <!-- <li><a href="#"><i class="fa fa-search"></i></a></li> -->
                         </ul>
                     </div>
                     <div class="product-content">
-                        <!-- <ul class="rating">
-                            <li class="fa fa-star"></li>
-                            <li class="fa fa-star"></li>
-                            <li class="fa fa-star"></li>
-                            <li class="fa fa-star"></li>
-                            <li class="far fa-star"></li>
-                        </ul> -->
+                        
                         <h3 class="title"><a href="#">{{ list.title }}</a></h3>
                         <h3 class="title"><a href="#">{{ list.description }}</a></h3>
                         <div class="price">${{ list.starting_bid }}</div>

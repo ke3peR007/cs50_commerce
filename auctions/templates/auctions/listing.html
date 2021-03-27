@@ -11,7 +11,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <p class="heading lead">{{ message }}</p>
-                <!-- <h5 class="modal-title" id="exampleModalLongTitle">{{ message }}</h5> -->
+                
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -55,7 +55,9 @@
                     <p class="product-description">{{ listing.description }}</p>
                     <h4 class="price">Price: <span>${{ listing.starting_bid }}</span></h4>
                     <h4 class="price">Highest Bid: {% if highest_bids %}<span>${{ highest_bids }}</span>{% else %}<span>No Bid Placed</span>{% endif %}</h4>
+                    {% if bids_count > 0 %}
                     <p class="vote"><strong>{{ bids_count }}</strong> bids has been placed on this listing!</p>
+                    {% endif %}
                     {% if winner == None %}
                     <div class="action">
                         <button class="add-to-cart btn btn-default" type="button" data-toggle="collapse" data-target="#bidForm" aria-expanded="false" aria-controls="collapseExample">Place Bid</button>
@@ -86,22 +88,13 @@
 <div class="container mt-5 mb-5">
     <div class="d-flex justify-content-center row">
         <div class="d-flex flex-column col-md-8">
-            <!-- <div class="d-flex flex-row align-items-center text-left comment-top p-2 bg-white border-bottom px-4">
-                <div class="profile-image"><img class="rounded-circle" src="https://i.imgur.com/t9toMAQ.jpg" width="70"></div>
-                <div class="d-flex flex-column-reverse flex-grow-0 align-items-center votings ml-1"><i class="fa fa-sort-up fa-2x hit-voting"></i><span>127</span><i class="fa fa-sort-down fa-2x hit-voting"></i></div>
-                <div class="d-flex flex-column ml-3">
-                    <div class="d-flex flex-row post-title">
-                        <h5>Is sketch 3.9.1 stable?</h5><span class="ml-2">(Jesshead)</span>
-                    </div>
-                    <div class="d-flex flex-row align-items-center align-content-center post-title"><span class="bdge mr-1">video</span><span class="mr-2 comments">13 comments&nbsp;</span><span class="mr-2 dot"></span><span>6 hours ago</span></div>
-                </div>
-            </div> -->
+        
             <div class="coment-bottom bg-white p-2 px-4">
                 <div class="d-flex flex-row add-comment-section mt-4 mb-4">
                     <form action="{% url "add_comment" %}" method="post">
                         {% csrf_token %}
                         <input type="hidden" value="{{ listing.id }}" name="listing_id"/>
-                        <input type="hidden" value="-1" name="commented_on"/>
+                        
                         <div class="form-group">
                           {{ commentForm.comment.errors }}
                             
@@ -112,48 +105,19 @@
                         </div>
                       </form>
                 </div>
-                <!-- {{ comments }} -->
+                
                 {% for comment in comments %}
                 <div class="commented-section mt-2">
-                    {% if comment.commented_on == -1 %}
+                    
                     <div class="d-flex flex-row align-items-center commented-user">
-                        <h5 class="mr-2">{{ comment.user}}</h5><span class="dot mb-1"></span><span class="mb-1 ml-2">4 hours ago</span>
+                        <h5 class="mr-2">{{ comment.user}}</h5><span class="dot mb-1"></span><span class="mb-1 ml-2">{{ comment.commented_time }}</span>
                     </div>
                     <div class="comment-text-sm"><span>{{ comment.comment }}</span></div>
                     
-                    <div class="reply-section">
-                        <div class="d-flex flex-row align-items-center voting-icons"><i class="fa fa-sort-up fa-2x mt-3 hit-voting"></i><i class="fa fa-sort-down fa-2x mb-3 hit-voting"></i><span class="ml-2">10</span><span class="dot ml-2"></span>
-                            <h6 class="ml-2 mt-1" class="add-to-cart btn btn-default" type="button" data-toggle="collapse" data-target="#{{ comment.user }}_{{ comment.id}}" aria-expanded="false" aria-controls="collapseExample">Reply</h6>
-                            
-                        </div>
-                        {% if   comment.commented_on == comment.id %}
-                        <h1>here</h1>
-                        <div class="d-flex flex-row align-items-center commented-user">
-                            <h5 class="mr-2">{{ comment.user}}</h5><span class="dot mb-1"></span><span class="mb-1 ml-2">4 hours ago</span>
-                        </div>
-                        
-                        {% endif %}
-                        <div class="collapse" id="{{ comment.user }}_{{ comment.id}}">
-                            
-                                <form action="{% url "add_comment" %}" method="post">
-                                    {% csrf_token %}
-                                    <input type="hidden" value="{{ listing.id }}" name="listing_id"/>
-                                    <input type="hidden" value="{{ comment.id }}" name="commented_on"/>
-                                    <div class="form-group">
-                                      {{ commentForm.comment.errors }}
-                                        
-                                      {{ commentForm.comment }}
-                                    </div>
-                                    <div class="form-group"> 
-                                        <button type="submit" class="btn btn-primary float-right">Comment</button>
-                                    </div>
-                                  </form>
-                            
-                        </div>
-                        
-                    </div>
-                    {% endif %}
+                    
+                    
                 </div>
+                <hr style="background-color: black;">
                 {% endfor %}
             </div>
         </div>
