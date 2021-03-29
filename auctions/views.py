@@ -247,7 +247,7 @@ def add_remove_to_watchlist(request, listing_id):
         messages.success(request, "Removed from wishlist.")
         return HttpResponseRedirect(reverse("listing", args={listing_id}))
 
-
+@login_required()
 def add_remove_to_watchlist_index(request, listing_id):
     print(request)
     product = Product.objects.get(pk=listing_id)
@@ -276,4 +276,24 @@ def view_watchlist(request):
         "users_watchlist": product,
         "watchlist_count": watchlist_count,
     })
-    
+
+def view_categories(request):
+    product = Product.objects.all()
+    categories = []
+    for item in product:
+        if item.category not in categories:
+            categories.append(item.category)
+    print(categories)
+    return render(request, "auctions/categories.html", {
+        "categories": categories,
+    })
+
+def category(request, category_name):
+    print(category_name)
+    if category_name == "None":
+        listings = Product.objects.filter(category="", status_of_listing=True)
+    else:
+        listings = Product.objects.filter(category=category_name, status_of_listing=True)
+    return render(request, "auctions/category.html", {
+        "listings": listings
+    })

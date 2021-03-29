@@ -1,0 +1,18 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+    {% block css %}
+        <link href="{% static 'auctions/index_listing.css' %}" rel="stylesheet">
+    {% endblock %}
+
+{% block body %}
+    <h2 style="text-align: center;">Categories</h2>
+      <!-- {{category}} -->
+      <ul>
+      {% for item in categories %}
+        {% if item %}
+        <a href="{% url 'category' item %}"><li>{{ item }}</li></a>
+        {% endif %}
+      {% endfor %}
+      <a href="{% url 'category' None %}"><li>others</li></a>
+    </ul>
+{% endblock %}

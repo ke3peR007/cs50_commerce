@@ -14,5 +14,7 @@ urlpatterns = [
     path("add_comment", views.add_comment, name="add_comment"),
     path("add_remove_to_watchlist/<int:listing_id>", views.add_remove_to_watchlist, name="add_remove_to_watchlist"),
     path("view_watchlist", views.view_watchlist, name="view_watchlist"),
-    path("add_remove_to_watchlist_index/<int:listing_id>", views.add_remove_to_watchlist_index, name="add_remove_to_watchlist_index")
+    path("add_remove_to_watchlist_index/<int:listing_id>", views.add_remove_to_watchlist_index, name="add_remove_to_watchlist_index"),
+    path("view_categories", views.view_categories, name="view_categories"),
+    path("category/<str:category_name>", views.category, name="category"),
 ]
