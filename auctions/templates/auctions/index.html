@@ -5,9 +5,18 @@
     {% endblock %}
 
 {% block body %}
+    {% for message in messages %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
     <h2 style="text-align: center;">Active Listings</h2>
         <div class="row">
             {% for list in listings %}
+            <!-- <h1>{{list.product_watchlist}}</h1> -->
             <div class="col-md-3 col-sm-6">
                 <div class="product-grid">
                     <div class="product-image">
@@ -18,9 +27,11 @@
                                 <img class="" src="{% static 'auctions/no-image-available.png' %}">
                             {% endif %}
                         </a>
+                        
                         <ul class="product-links">
-                            <li><a href="#"><i class="far fa-heart"></i></a></li>
+                            <li><a href="{% url 'add_remove_to_watchlist_index' list.id %}"><i class="far fa-heart"></i></a></li>
                         </ul>
+                        
                     </div>
                     <div class="product-content">
                         

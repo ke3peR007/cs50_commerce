@@ -46,7 +46,7 @@ class Comment(models.Model):
 class UserWatchlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_watchlist", default=None)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="product_watchlist")
-    item_id = models.IntegerField()
+    
 
     def __str__(self):
-        return f"{self.user.username} : {self.product.title}"
+        return f"{self.user} : {self.product.title}"

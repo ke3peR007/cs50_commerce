@@ -10,7 +10,7 @@ from django.db.models import Max
 from django.utils import timezone
 import pytz
 import datetime
-from .models import User, Product, Bid, Comment
+from .models import User, Product, Bid, Comment, UserWatchlist
 
 
 
@@ -51,9 +51,17 @@ class CommentForm(forms.Form):
 
 def index(request):
     listings = Product.objects.all().filter(status_of_listing=True)
-    return render(request, "auctions/index.html", {
-        "listings": listings
-    })
+    try:
+        watchlist_count = UserWatchlist.objects.filter(user=request.user).count
+        return render(request, "auctions/index.html", {
+            "listings": listings,
+            "watchlist_count": watchlist_count,
+        })
+    except:
+        return render(request, "auctions/index.html", {
+            "listings": listings,
+            "watchlist_count": None,
+        })
 
 def login_view(request):
     if request.method == "POST":
@@ -109,8 +117,10 @@ def register(request):
 @login_required()
 def create_listing(request):
     if request.method == "GET":
+        watchlist_count = UserWatchlist.objects.filter(user=request.user).count
         return render(request, "auctions/add_product.html", {
-            "form" : ListingForm()
+            "form" : ListingForm(),
+            "watchlist_count" : watchlist_count,
         })
     if request.method == "POST":
         form = ListingForm(request.POST)
@@ -138,8 +148,10 @@ def create_listing(request):
 def user_listing(request):
     if request.method == "GET":
         listing = Product.objects.all().filter(user=request.user)
+        watchlist_count = UserWatchlist.objects.filter(user=request.user).count
         return render(request, "auctions/user_listing.html", {
-            "listing" : listing
+            "listing" : listing,
+            "watchlist_count": watchlist_count,
         })
 
 
@@ -152,6 +164,9 @@ def listing(request, listing_id):
             highest_bids = Bid.objects.all().filter(product=listing).aggregate(Max('bid_price'))
             bids_count = Bid.objects.all().filter(product=listing).count()
             comments = Comment.objects.all().filter(product=listing)
+            watchlist = listing.product_watchlist.filter(user=request.user)
+            watchlist_count = UserWatchlist.objects.filter(user=request.user).count
+            print(watchlist)
             if listing.status_of_listing == False:
                 winner = Bid.objects.get(bid_price=highest_bids["bid_price__max"])
             else:
@@ -167,6 +182,8 @@ def listing(request, listing_id):
             "winner" : winner,
             "commentForm" : CommentForm(),
             "comments" : comments,
+            "watchlist" : watchlist,
+            "watchlist_count": watchlist_count,
         })
 
     if request.method == "POST":
@@ -211,3 +228,52 @@ def add_comment(request):
             return HttpResponseRedirect(reverse("listing", args={listing_id}))
     else:
         return HttpResponseRedirect(reverse("index"))
+
+
+@login_required()
+def add_remove_to_watchlist(request, listing_id):
+    print(request)
+    product = Product.objects.get(pk=listing_id)
+    user = request.user
+    user_watchlist_item = UserWatchlist.objects.filter(product=product , user=user)
+    print(user_watchlist_item)
+    if not user_watchlist_item:
+        watchlist = UserWatchlist(product=product, user=user)
+        watchlist.save()
+        messages.success(request, "Added to wishlist.")
+        return HttpResponseRedirect(reverse("listing", args={listing_id}))
+    else:
+        user_watchlist_item.delete()
+        messages.success(request, "Removed from wishlist.")
+        return HttpResponseRedirect(reverse("listing", args={listing_id}))
+
+
+def add_remove_to_watchlist_index(request, listing_id):
+    print(request)
+    product = Product.objects.get(pk=listing_id)
+    user = request.user
+    user_watchlist_item = UserWatchlist.objects.filter(product=product , user=user)
+    print(user_watchlist_item)
+    if not user_watchlist_item:
+        watchlist = UserWatchlist(product=product, user=user)
+        watchlist.save()
+        messages.success(request, "Added to wishlist.")
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        user_watchlist_item.delete()
+        messages.success(request, "Removed from wishlist.")
+        return HttpResponseRedirect(reverse("index"))
+
+
+@login_required()
+def view_watchlist(request):
+    users_watchlist = UserWatchlist.objects.filter(user=request.user)
+    product = users_watchlist
+    for ul in users_watchlist:
+        print(ul.product.id)
+    watchlist_count = UserWatchlist.objects.filter(user=request.user).count
+    return render(request,"auctions/watchlist.html", {
+        "users_watchlist": product,
+        "watchlist_count": watchlist_count,
+    })
+    

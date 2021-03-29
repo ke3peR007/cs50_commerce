@@ -5,6 +5,7 @@
     {% endblock %}
 
 {% block body %}
+
 {% for message in messages %}
         <div class="modal fade" id="exampleModalCenter"  tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -61,8 +62,11 @@
                     {% if winner == None %}
                     <div class="action">
                         <button class="add-to-cart btn btn-default" type="button" data-toggle="collapse" data-target="#bidForm" aria-expanded="false" aria-controls="collapseExample">Place Bid</button>
-                        
-                        <button class="like btn btn-default" type="button"><span class="fa fa-heart"></span></button>
+                        {% if watchlist %}
+                        <a href="{% url 'add_remove_to_watchlist' listing.id %}"class="like btn btn-default" type="button"><span><i class="fas fa-heart"></i></span></a>
+                        {% else %}
+                        <a href="{% url 'add_remove_to_watchlist' listing.id %}"class="like btn btn-default" type="button"><span class="far fa-heart"></span></a>
+                        {% endif %}
                     </div>
                     
                     <div class="collapse" id="bidForm">
