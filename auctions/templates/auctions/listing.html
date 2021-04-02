@@ -11,7 +11,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <p class="heading lead">{{ message }}</p>
+            
                 
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -38,9 +38,9 @@
     <div class="card">
         <div class="container-fliud">
             <div class="wrapper row">
-                <div class="preview col-md-6">
+                <div class="col-md-6">
                     
-                    <div class="preview-pic tab-content">
+                    <div class="tab-content">
                         {% if listing.image_url %}
                             <div class="tab-pane active" id="pic-1"><img src="{{ listing.image_url }}" /></div>
                         {% else %}
@@ -75,7 +75,7 @@
                                 {% csrf_token %}
                                 <div class="form-group">
                                     {{ form.bid.errors }}
-                                  <label for="inputPassword2" class="sr-only">Bid</label>
+                                  <label class="sr-only">Bid</label>
                                     {{ form.bid }}
                                 </div>
                                 <button type="submit" class="btn btn-primary">Confirm Bid</button>

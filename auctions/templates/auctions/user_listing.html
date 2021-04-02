@@ -8,15 +8,17 @@
             <div class="col-md-10">
                 <div class="row p-2 bg-white border rounded">
                     <div class="col-md-3 mt-1">
-                        {% if list.image_url %}
+                        
                         <a href="{% url 'listing' list.id%}">
+                            {% if list.image_url %}
                             <img href="{% url 'listing' list.id%}" class="img-fluid img-responsive rounded product-image" src="{{ list.image_url }}">
-                        </a>
-                        {% else %}
-                        <a href="{% url 'listing' list.id%}">
+                            {% else %}
                             <img  class="img-fluid img-responsive rounded product-image" src="{% static 'auctions/no-image-available.png' %}">
+                            {% endif %}
                         </a>
-                        {% endif %}
+                        
+                        
+                        
                     </div>
                     <div class="col-md-6 mt-1">
                         <h5>Title: {{ list.title }}</h5>

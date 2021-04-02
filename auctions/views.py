@@ -160,20 +160,26 @@ def user_listing(request):
 def listing(request, listing_id):
     if request.method == "GET":
         try:
+            dlisting = Product.objects.filter(pk=listing_id)
+            print(dlisting)
             listing = Product.objects.get(pk=listing_id)
             highest_bids = Bid.objects.all().filter(product=listing).aggregate(Max('bid_price'))
             bids_count = Bid.objects.all().filter(product=listing).count()
             comments = Comment.objects.all().filter(product=listing)
             watchlist = listing.product_watchlist.filter(user=request.user)
             watchlist_count = UserWatchlist.objects.filter(user=request.user).count
-            print(watchlist)
+            # print(watchlist)
             if listing.status_of_listing == False:
                 winner = Bid.objects.get(bid_price=highest_bids["bid_price__max"])
             else:
                 winner = None
         except:
-            return HttpResponseRedirect(reverse("index"))
-        
+            pass
+            # return HttpResponseRedirect(reverse("index"))
+        if listing.status_of_listing == False:
+            winner = Bid.objects.get(bid_price=highest_bids["bid_price__max"])
+        else:
+            winner = None
         return render(request, "auctions/listing.html", {
             "listing" : listing,
             "form" : BidForm(),
@@ -206,7 +212,7 @@ def listing(request, listing_id):
 
 @login_required()
 def remove_listing(request, listing_id):
-    product = Product.objects.get(pk=listing_id)
+    product = Product.objects.get(pk=listing_id, user=request.user)
     product.status_of_listing = False
     product.save()
     return HttpResponseRedirect(reverse("user_listing"))
@@ -278,7 +284,11 @@ def view_watchlist(request):
     })
 
 def view_categories(request):
-    product = Product.objects.all()
+    product = Product.objects.filter(status_of_listing=True)
+    try:
+        watchlist_count = UserWatchlist.objects.filter(user=request.user).count
+    except:
+        watchlist_count = 0
     categories = []
     for item in product:
         if item.category not in categories:
@@ -286,6 +296,7 @@ def view_categories(request):
     print(categories)
     return render(request, "auctions/categories.html", {
         "categories": categories,
+        "watchlist_count": watchlist_count
     })
 
 def category(request, category_name):
@@ -294,6 +305,11 @@ def category(request, category_name):
         listings = Product.objects.filter(category="", status_of_listing=True)
     else:
         listings = Product.objects.filter(category=category_name, status_of_listing=True)
+    try:
+        watchlist_count = UserWatchlist.objects.filter(user=request.user).count
+    except:
+        watchlist_count = 0
     return render(request, "auctions/category.html", {
-        "listings": listings
+        "listings": listings,
+        "watchlist_count": watchlist_count
     })

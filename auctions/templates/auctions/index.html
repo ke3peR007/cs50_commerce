@@ -16,18 +16,18 @@
     <h2 style="text-align: center;">Active Listings</h2>
         <div class="row">
             {% for list in listings %}
-            <!-- <h1>{{list.product_watchlist}}</h1> -->
+            
             <div class="col-md-3 col-sm-6">
                 <div class="product-grid">
                     <div class="product-image">
                         <a href="{% url 'listing' list.id %}" class="image">
                             {% if list.image_url %}
-                            <img class="pic-1" src="{{ list.image_url }}">
+                            <img  src="{{ list.image_url }}">
                             {% else %}
-                                <img class="" src="{% static 'auctions/no-image-available.png' %}">
+                                <img src="{% static 'auctions/no-image-available.png' %}">
                             {% endif %}
                         </a>
-                        
+                    
                         <ul class="product-links">
                             <li><a href="{% url 'add_remove_to_watchlist_index' list.id %}"><i class="far fa-heart"></i></a></li>
                         </ul>
@@ -36,7 +36,7 @@
                     <div class="product-content">
                         
                         <h3 class="title"><a href="#">{{ list.title }}</a></h3>
-                        <h3 class="title"><a href="#">{{ list.description }}</a></h3>
+                        
                         <div class="price">${{ list.starting_bid }}</div>
                     </div>
                 </div>
