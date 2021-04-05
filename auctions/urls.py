@@ -17,4 +17,5 @@ urlpatterns = [
     path("add_remove_to_watchlist_index/<int:listing_id>", views.add_remove_to_watchlist_index, name="add_remove_to_watchlist_index"),
     path("view_categories", views.view_categories, name="view_categories"),
     path("category/<str:category_name>", views.category, name="category"),
+    path("ajax_calls/search/", views.autocomplete, name="autocomplete"),
 ]

@@ -10,6 +10,7 @@ from django.db.models import Max
 from django.utils import timezone
 import pytz
 import datetime
+from django.http import JsonResponse
 from .models import User, Product, Bid, Comment, UserWatchlist
 
 
@@ -313,3 +314,27 @@ def category(request, category_name):
         "listings": listings,
         "watchlist_count": watchlist_count
     })
+
+
+def autocomplete(request):
+    if 'term' in request.GET:
+        qs = Product.objects.filter(title__icontains=request.GET.get('term'), status_of_listing=True)
+        titles = list()
+        for product in qs:
+            if product.title not in titles:
+                titles.append(product.title)
+        return JsonResponse(titles, safe=False)
+    if request.method == "POST":
+        text = request.POST["txtSearch"]
+        listings = Product.objects.all().filter(status_of_listing=True, title=text)
+        try:
+            watchlist_count = UserWatchlist.objects.filter(user=request.user).count
+            return render(request, "auctions/index.html", {
+                "listings": listings,
+                "watchlist_count": watchlist_count,
+            })
+        except:
+            return render(request, "auctions/index.html", {
+                "listings": listings,
+                "watchlist_count": None,
+            })
