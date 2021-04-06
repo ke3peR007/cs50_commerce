@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.core.paginator import Paginator
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django import forms
@@ -52,16 +53,21 @@ class CommentForm(forms.Form):
 
 def index(request):
     listings = Product.objects.all().filter(status_of_listing=True)
+    paginator = Paginator(listings, 6)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     try:
         watchlist_count = UserWatchlist.objects.filter(user=request.user).count
         return render(request, "auctions/index.html", {
             "listings": listings,
             "watchlist_count": watchlist_count,
+            'page_obj': page_obj,
         })
     except:
         return render(request, "auctions/index.html", {
             "listings": listings,
             "watchlist_count": None,
+            'page_obj': page_obj,
         })
 
 def login_view(request):
@@ -148,11 +154,15 @@ def create_listing(request):
 @login_required()
 def user_listing(request):
     if request.method == "GET":
-        listing = Product.objects.all().filter(user=request.user)
+        listings = Product.objects.all().filter(user=request.user)
+        paginator = Paginator(listings, 3)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
         watchlist_count = UserWatchlist.objects.filter(user=request.user).count
         return render(request, "auctions/user_listing.html", {
-            "listing" : listing,
+            "listing" : listings,
             "watchlist_count": watchlist_count,
+            'page_obj': page_obj,
         })
 
 
@@ -306,13 +316,17 @@ def category(request, category_name):
         listings = Product.objects.filter(category="", status_of_listing=True)
     else:
         listings = Product.objects.filter(category=category_name, status_of_listing=True)
+    paginator = Paginator(listings, 6)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     try:
         watchlist_count = UserWatchlist.objects.filter(user=request.user).count
     except:
         watchlist_count = 0
     return render(request, "auctions/category.html", {
         "listings": listings,
-        "watchlist_count": watchlist_count
+        "watchlist_count": watchlist_count,
+        'page_obj': page_obj,
     })
 
 
@@ -327,14 +341,19 @@ def autocomplete(request):
     if request.method == "POST":
         text = request.POST["txtSearch"]
         listings = Product.objects.all().filter(status_of_listing=True, title=text)
+        paginator = Paginator(listings, 6)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
         try:
             watchlist_count = UserWatchlist.objects.filter(user=request.user).count
             return render(request, "auctions/index.html", {
                 "listings": listings,
                 "watchlist_count": watchlist_count,
+                'page_obj': page_obj,
             })
         except:
             return render(request, "auctions/index.html", {
                 "listings": listings,
                 "watchlist_count": None,
+                'page_obj': page_obj,
             })
