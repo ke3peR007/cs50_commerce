@@ -18,6 +18,7 @@ import simplejson
 import os
 
 
+
 class ListingForm(forms.Form):
     title = forms.CharField(label="Title", required=True, max_length=64)
     description = forms.CharField(label="Description", required=True, widget=forms.Textarea(attrs={"rows": 3, "cols": 20}))
