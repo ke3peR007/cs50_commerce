@@ -13,7 +13,9 @@ import pytz
 import datetime
 from django.http import JsonResponse
 from .models import User, Product, Bid, Comment, UserWatchlist
-
+import requests
+import simplejson
+import os
 
 
 class ListingForm(forms.Form):
@@ -99,7 +101,7 @@ def register(request):
     if request.method == "POST":
         username = request.POST["username"]
         email = request.POST["email"]
-
+        key = os.environ.get('EMAIL_API_KEY')
         # Ensure password matches confirmation
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
@@ -107,7 +109,14 @@ def register(request):
             return render(request, "auctions/register.html", {
                 "message": "Passwords must match."
             })
-
+        # Ensure if the email is valid
+        email_check = requests.get(f'http://apilayer.net/api/check?access_key={key}&email={email}&smtp=1&format=1')
+        api_response = simplejson.loads(email_check.content)
+    
+        if api_response["format_valid"] == False or api_response["mx_found"] == False or api_response["smtp_check"] == False or api_response["disposable"] == True or api_response["score"] <= 0.65:
+            return render(request, "auctions/register.html", {
+                "message": "Enter valid email."
+            })
         # Attempt to create new user
         try:
             user = User.objects.create_user(username, email, password)
